@@ -26,6 +26,7 @@ class IntBST {
 
     // THESE ARE HARDER! DO THESE LAST
     int getPredecessor(int value) const;       // returns the predecessor value of the given value or 0 if there is none
+					       //
     int getSuccessor(int value) const;         // returns the successor value of the given value or 0 if there is none
     bool remove(int value);                    // deletes the Node containing the given value from the tree
 
