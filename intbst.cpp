@@ -190,8 +190,8 @@ int IntBST::getSuccessor(int value) const{
 // deletes the Node containing the given value from the tree
 // returns true if the node exist and was deleted or false if the node does not exist
 bool IntBST::remove(int value){
-    if(!getNodeFor(value, root)) return false;
     Node* n = getNodeFor(value, root);
+    if(!n) return false;
     if(!n->parent && !n->left && !n->right){
       delete root;
       root = nullptr;
@@ -201,7 +201,7 @@ bool IntBST::remove(int value){
     //0
     if(!n->left && !n->right){
       if(n->parent->left == n) n->parent->left = nullptr;
-      else if(n->parent->right == n) n->parent->right = nullptr;
+      else n->parent->right = nullptr;
       delete n;
       return true;
     }
@@ -211,22 +211,26 @@ bool IntBST::remove(int value){
       if(!n->parent){
         root = n->right;
 	root->parent = nullptr;
+	delete n;
+	return true;
       }
       if(n->parent->left == n){
         n->parent->left = n->right;
 	n->right->parent = n->parent;
       }
-      else if(n->parent->right == n){
+      else{
         n->parent->right = n->right;
 	n->right->parent = n->parent;
       }
       delete n;
       return true;
     }
-    else if(n->left && !n->right){
+    if(n->left && !n->right){
       if(!n->parent){
         root = n->left;
 	root->parent = nullptr;
+	delete n;
+	return true;
       }
       if(n->parent->left == n){
         n->parent->left = n->left;
@@ -241,17 +245,14 @@ bool IntBST::remove(int value){
     }
     
     //2
-    if(n->left && n->right){
-      Node* curr = n;
-      curr = n->left;
-      while(curr->right){
-        curr = curr->right;
-      }
-      n->info = curr->info;
-      if(curr->parent->left == curr) curr->parent->left = curr->left;
-      if(curr->parent->right == curr) curr->parent->right = curr->left;
-      delete curr;
-      return true;
+    Node* curr = n->left;
+    while(curr->right){
+      curr = curr->right;
     }
+    n->info = curr->info;
+    if(curr->parent->left == curr) curr->parent->left = curr->left;
+    else curr->parent->right = curr->left;
+    if(curr->left) curr->left->parent = curr->parent;
+    delete curr;
     return true;
 }
