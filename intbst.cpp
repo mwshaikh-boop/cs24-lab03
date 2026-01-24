@@ -198,57 +198,52 @@ bool IntBST::remove(int value){
       return true;
     }
 
-    //0 children
+    //0
     if(!n->left && !n->right){
       if(n->parent->left == n) n->parent->left = nullptr;
-      if(n->parent->right == n) n->parent->right = nullptr;
+      else if(n->parent->right == n) n->parent->right = nullptr;
       delete n;
       return true;
     }
     
-    //1 children
-    if(n->left && !n->right){
-      if(n->parent){
-        if(n->parent->left == n) n->parent->left = n->left;
-	if(n->parent->right == n) n->parent->right = n->left;
-      } else{
-        root = n->left;
+    //1
+    if(!n->left && n->right){
+      if(n->parent->left == n){
+        n->parent->left = n->right;
+	n->right->parent = n->parent;
       }
-      n->left->parent = n->parent;
-      delete n;
-    }
-    if(n->right && !n->left){
-      if(n->parent){
-        if(n->parent->left == n) n->parent->left = n->right;
-        if(n->parent->right == n) n->parent->right = n->right;
-      } else{
-        root = n->right;
+      else if(n->parent->right == n){
+        n->parent->right = n->right;
+	n->right->parent = n->parent;
       }
-      n->right->parent = n->parent;
       delete n;
       return true;
     }
-
-    //2 children
+    else if(n->left && !n->right){
+      if(n->parent->left == n){
+        n->parent->left = n->left;
+        n->left->parent = n->parent;
+      }
+      else if(n->parent->right == n){
+        n->parent->right = n->left;
+        n->left->parent = n->parent;
+      }
+      delete n;
+      return true;
+    }
+    
+    //2
     if(n->left && n->right){
-      Node* traverse = n->right;
-      while(traverse->left) traverse = traverse->left;
-      if(traverse->parent->left == traverse) traverse->parent->left = traverse->right;
-      if(traverse->parent->right == traverse) traverse->parent->right = traverse->right;
-      if(traverse->right) traverse->right->parent = traverse->parent;
-      traverse->parent = n->parent;
-      traverse->left = n->left;
-      traverse->right = n->right;
-      if(n->left) n->left->parent = traverse;
-      if(n->right) n->right->parent = traverse;
-      if(n->parent){
-        if(n->parent->left == n) n->parent->left = traverse;
-	if(n->parent->right == n) n->parent->right = traverse;
+      Node* curr = n;
+      curr = n->left;
+      while(curr->right){
+        curr = curr->right;
       }
-      if(!n->parent) root = traverse;
-      delete n;
+      n->info = curr->info;
+      if(curr->parent->left == curr) curr->parent->left = curr->left;
+      if(curr->parent->right == curr) curr->parent->right = curr->left;
+      delete curr;
       return true;
     }
-
     return true;
 }
